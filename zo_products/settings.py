@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import configs as cfg
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -113,16 +114,7 @@ WSGI_APPLICATION = 'zo_products.wsgi.application'
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'zo_products',
-        'USER': 'raji',
-        'PASSWORD': 'raji@123',
-        'HOST': '127.0.0.1',
-        'PORT': '',
-    }
-}
+DATABASES = cfg.DATABASES
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -160,8 +152,35 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = BASE_DIR / 'media'
+
+# Media files - AWS S3
+INSTALLED_APPS += ['storages']
+
+AWS_ACCESS_KEY_ID = cfg.AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY = cfg.AWS_SECRET_ACCESS_KEY
+AWS_STORAGE_BUCKET_NAME = cfg.AWS_BUCKET_NAME
+AWS_S3_REGION_NAME = cfg.AWS_S3_REGION_NAME
+AWS_LOCATION = cfg.MEDIA_PATH
+
+
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+
+STORAGES = {
+    'default': {
+        'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
+    },
+    'staticfiles': {
+        'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+    },
+}
+
+MEDIA_URL = cfg.MEDIA_URL
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',

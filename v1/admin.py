@@ -594,7 +594,7 @@ class SubCategoryAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
     def has_add_permission(self, request):
-        return True
+        return False
 
     def has_view_permission(self, request, obj=None):
         return True
@@ -611,7 +611,7 @@ class BrandAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
     def has_add_permission(self, request):
-        return True
+        return False
 
     def has_view_permission(self, request, obj=None):
         return True
@@ -628,7 +628,7 @@ class MaterialsAdmin(FileUploadMixin, admin.ModelAdmin):
     search_fields = ['name']
 
     def has_add_permission(self, request):
-        return True
+        return False
 
     def has_view_permission(self, request, obj=None):
         return True
