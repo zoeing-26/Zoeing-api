@@ -15,11 +15,6 @@ Zo Products
 '''
 
 
-SENDER ='rainaraji66@gmail.com'
-INTERNAL_RECIPIENTS = ['rainaraji66@gmail.com']
-PASSWORD = 'etvjkyekoaiebrwi'
-
-
 
 USER_MAIL_SUBJECT  = "Regarding Order"
 
@@ -37,3 +32,9 @@ Zo products
 
 '''
 
+
+SUCCESS_RESPONSE = "Successfull"
+ERROR_RESPONSE = "Unsuccessfull"\
+
+GUEST_USER = "Guest User created"
+REGISTERED_USER = "User created successfully"
