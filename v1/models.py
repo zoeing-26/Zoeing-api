@@ -133,6 +133,7 @@ class Enquiry(TimeStampMixin):
     materials = models.JSONField(blank=False,null=False)
     phone_number = models.CharField(max_length=15,blank=True,null=True)
     company_name = models.CharField(max_length=150,blank=True,null=True)
+    customer_type = models.CharField(max_length=255,blank=True,null=True)
     class Meta:
         verbose_name = "enquiry"
         db_table = "enquiry"

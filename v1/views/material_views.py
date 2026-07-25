@@ -1,37 +1,36 @@
 from django.shortcuts import render
 from v1.models import Materials,SubCategory,Brand,Category
-from rest_framework import viewsets
+from rest_framework import viewsets,status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from v1.serializers.material_serializer import BrandSerializer,CategorySerializer,EnquirySerializer
-from v1.utils import send_email
-from v1.constants import INTERNAL_MAIL_SUBJECT,INTERNAL_BODY,SENDER,PASSWORD,INTERNAL_RECIPIENTS,USER_MAIL_SUBJECT,USER_BODY
+from v1.constants import SUCCESS_RESPONSE,ERROR_RESPONSE
 from rest_framework import status
+import configs as cfg
+from v1.services.send_order_confirmation import send_order_confirmation_email
+from v1.common.response import success_response,error_response
 
 
 
 class EnquiryView(viewsets.ViewSet):
         
     def post(self,request):
-        
-        data = request.data
-        print(data['email'])
-        mail = data['email']
-        
+
+        data = request.data        
         serializer = EnquirySerializer(data=data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            material_list = data['materials']
-            formatted_list = '\n'.join([
-                f" - {item['name']} : {item['quantity']}"
-                for item in material_list
-            ])
-            send_email(subject=INTERNAL_MAIL_SUBJECT,body=INTERNAL_BODY.format(mail=data['email'],materials=formatted_list),sender=SENDER,recipients=INTERNAL_RECIPIENTS,password=PASSWORD)
-            send_email(subject=USER_MAIL_SUBJECT,body=USER_BODY.format(materials=formatted_list),sender=SENDER,recipients=[mail],password=PASSWORD)
+            # material_list = data['materials']
+            # formatted_list = '\n'.join([
+            #     f" - {item['name']} : {item['quantity']}"
+            #     for item in material_list
+            # ])
+
+            mail_sent = send_order_confirmation_email(data)
             
-            return Response("Saved Successfully")
+            return success_response(message=SUCCESS_RESPONSE,status_code=status.HTTP_200_OK)
         
-        return Response("Not Saved")
+        return error_response(message=ERROR_RESPONSE,status_code=status.HTTP_400_BAD_REQUEST)
         
 class MaterialView(viewsets.ViewSet): 
      
@@ -41,8 +40,8 @@ class MaterialView(viewsets.ViewSet):
         serializer = CategorySerializer(products,many=True,context={'request':request})
     
         if serializer:
-            return Response(serializer.data)
-        return Response("No data Available")
+            return success_response(message=SUCCESS_RESPONSE,data=serializer.data,status_code=status.HTTP_200_OK)
+        return error_response(message=ERROR_RESPONSE,status_code=status.HTTP_400_BAD_REQUEST)
     
     
     def brand_list(self,request):
@@ -52,9 +51,9 @@ class MaterialView(viewsets.ViewSet):
         serializer = BrandSerializer(brands,many=True,context={'request': request})
         
         if serializer:
-            return Response (serializer.data)
+            return success_response(message=SUCCESS_RESPONSE,data=serializer.data,status_code=status.HTTP_200_OK)
         
-        return Response("No data Aaailable")
+        return error_response(message=ERROR_RESPONSE,status_code=status.HTTP_400_BAD_REQUEST)
     
     
     def get_all_materials(self,request):
@@ -97,9 +96,9 @@ class MaterialView(viewsets.ViewSet):
             response.append(data)
             
         if response:
-            return Response({"message":"Successfully Fetched","materials": response},status=status.HTTP_200_OK)
+            return success_response(message=SUCCESS_RESPONSE,data=response,status_code=status.HTTP_200_OK)
         
-        return Response({"message":"No materials found"},status=status.HTTP_404_NOT_FOUND)
+        return error_response(message=ERROR_RESPONSE,status_code=status.HTTP_404_NOT_FOUND)
         
     
     
