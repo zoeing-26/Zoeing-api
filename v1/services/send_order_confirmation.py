@@ -20,17 +20,8 @@ from v1.utils import send_email
 from itertools import zip_longest
 
 def send_order_confirmation_email(order):
-    """
-    order: your Order model instance.
-    Expected related fields (rename to match your schema):
-        order.customer.name / customer.email
-        order.reference
-        order.created_at
-        order.total
-        order.shipping_address (company, line1, postal_code, city, state, country, phone)
-        order.items.all()  -> each item has quantity, item_number, description,
-                              unit_price, line_total
-    """
+    """ Get details from enquiry and send confirmation mail to user """
+
     context = {
         # --- company / sender info: pull from settings so it's not hardcoded ---
         "company_name": cfg.COMPANY_NAME,
@@ -51,6 +42,7 @@ def send_order_confirmation_email(order):
         "customer_name": order['user_name'],
         "customer_company" : order.get('company_name',""),
         "customer_phone" : order['phone_number'],
+        "customer_email" : order['email'],
         # "order_view_url": f"{settings.SITE_URL}/orders/{order.id}/",
         # "order_reference": order.reference,
         # "order_date": order.created_at.strftime("%d-%m-%Y"),
@@ -74,7 +66,7 @@ def send_order_confirmation_email(order):
         #     }
         #     for item in order.items.all()
         # ],
-         "order_items": [
+        "order_items": [
         {
             "material_name": material["name"],
             "product_code": material["product_code"],
@@ -105,3 +97,43 @@ def send_order_confirmation_email(order):
         recipients=[order['email']],
         password= cfg.SALES_PASSWORD
     )
+
+def receive_order_confirmation_mail(order):
+
+    """ Get details from enquiry and send new order to sales mail"""
+
+    context = {
+
+        "customer_name": order['user_name'],
+        "customer_company_name" : order.get('company_name',""),
+        "customer_phone" : order['phone_number'],
+        "customer_email" : order['email'],
+
+        "company_email": cfg.DEFAULT_FROM_EMAIL,
+        "company_website": cfg.COMPANY_WEBSITE,
+        "current_year": datetime.now().year,
+        
+
+        "order_items": [
+                {
+                    "material_name": material["name"],
+                    "product_code": material["product_code"],
+                    "quantity": material["quantity"],
+                }
+                for material in order["materials"]
+            ],
+    }
+
+    html_content = render_to_string("emails/receive_order_confirmation.html", context)
+    text_content = strip_tags(html_content)  # plain-text fallback for clients that block HTML
+
+    subject = f"New Order Received " 
+
+    send_email(
+            subject=subject,
+            body=html_content,
+            sender = cfg.SENDER,
+            recipients=[cfg.SENDER],
+            password= cfg.SALES_PASSWORD
+        )
+    
