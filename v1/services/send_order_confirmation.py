@@ -93,9 +93,10 @@ def send_order_confirmation_email(order):
     send_email(
         subject=subject,
         body=html_content,
-        sender = cfg.SENDER,
+        from_email=cfg.NO_REPLY_EMAIL,
+        login_email = cfg.LOGIN_EMAIL,
         recipients=[order['email']],
-        password= cfg.SALES_PASSWORD
+        password= cfg.LOGIN_PASSWORD
     )
 
 def receive_order_confirmation_mail(order):
@@ -132,8 +133,9 @@ def receive_order_confirmation_mail(order):
     send_email(
             subject=subject,
             body=html_content,
-            sender = cfg.SENDER,
-            recipients=[cfg.SENDER],
-            password= cfg.SALES_PASSWORD
+            from_email=cfg.NO_REPLY_EMAIL,
+            login_email = cfg.LOGIN_EMAIL,
+            recipients=[cfg.LOGIN_EMAIL],
+            password= cfg.LOGIN_PASSWORD
         )
     
