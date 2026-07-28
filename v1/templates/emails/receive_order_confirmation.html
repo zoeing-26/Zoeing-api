@@ -19,42 +19,13 @@
 <body>
   <div class="wrapper">
 
-    <table class="header-table">
-      <tr>
-        <td width="120" valign="top">
-          {% if company_logo_url %}
-            <img src="{{ company_logo_url }}" alt="{{ company_name }}" width="100">
-          {% endif %}
-        </td>
-        <td valign="top">
-          <div class="company-name">{{ company_name }}</div>
-          <div><strong>Address:</strong></div>
-          <table style="border-collapse: collapse; margin-top: 4px;">
-            {% for uae_line, india_line in company_address_rows %}
-            <tr>
-              <td style="padding: 2px 10px 2px 0; border-right: 1px solid #999;">{{ uae_line }}</td>
-              <td style="padding: 2px 0 2px 10px;">{{ india_line }}</td>
-            </tr>
-            {% endfor %}
-          </table>
-          <!-- <div>PO Box: {{ company_po_box }},</div> -->
-          <!-- <div>{{ company_address_line1 }}</div>
-          <div>{{ company_address_line2 }}</div>
-          <div>{{ company_city }}, {{ company_country }}</div> -->
-          <br>
-          <div>Phone: {{ company_phone }}</div>
-          <!-- <div>Fax: {{ company_fax }}</div> -->
-          <div>Email: <a href="mailto:{{ company_email }}">{{ company_email }}</a></div>
-          <div>Web: <a href="{{ company_website }}">{{ company_website }}</a></div>
-        </td>
-      </tr>
-    </table>
+    
 
     <hr class="divider">
 
-    <p>Hi {{ customer_name }},</p>
-    <p>Thank you for using <a href="{{ company_website }}">{{ company_website }}</a>.</p>
-    <p>The details of your order are below:</p>
+    <p>Hi Team,</p>
+    <p>New order has been placed by {{customer_name}}.</p>
+    <p>The details of order are below:</p>
 
     <!-- <p><a href="{{ order_view_url }}">View my order online</a></p> -->
 

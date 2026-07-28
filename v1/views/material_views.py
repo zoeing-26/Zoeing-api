@@ -7,7 +7,7 @@ from v1.serializers.material_serializer import BrandSerializer,CategorySerialize
 from v1.constants import SUCCESS_RESPONSE,ERROR_RESPONSE
 from rest_framework import status
 import configs as cfg
-from v1.services.send_order_confirmation import send_order_confirmation_email
+from v1.services.send_order_confirmation import send_order_confirmation_email,receive_order_confirmation_mail
 from v1.common.response import success_response,error_response
 
 
@@ -27,6 +27,7 @@ class EnquiryView(viewsets.ViewSet):
             # ])
 
             mail_sent = send_order_confirmation_email(data)
+            receive_mail = receive_order_confirmation_mail(data)
             
             return success_response(message=SUCCESS_RESPONSE,status_code=status.HTTP_200_OK)
         
