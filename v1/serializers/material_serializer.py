@@ -1,9 +1,17 @@
 from rest_framework import serializers
-from v1.models import Materials,Brand,SubCategory,Category,Enquiry
+from v1.models import Materials,Brand,SubCategory,Category,Enquiry,Country
+
+
+class CountrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Country
+        fields = ['code', 'name']
+
 
 
 class MaterialSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
+    blocked_countries = CountrySerializer(many=True, read_only=True)
     
     def get_image(self,obj):
         request = self.context.get('request')
@@ -14,7 +22,7 @@ class MaterialSerializer(serializers.ModelSerializer):
     class Meta:
         model = Materials
         fields = ['id', 'name', 'description', 'count', 'price', 
-                  'product_code', 'image', 'industry','attachment_1','attachment_2','attachment_3','attachment_4']
+                  'product_code', 'image', 'industry','attachment_1','attachment_2','attachment_3','attachment_4','blocked_countries']
         
 class SubCategorySerializer(serializers.ModelSerializer):
     materials = MaterialSerializer(many=True, read_only=True)

@@ -264,7 +264,7 @@
 
 
 from django.contrib import admin
-from v1.models import Category, Brand, Materials, Enquiry, SubCategory, User
+from v1.models import Category, Brand, Materials, Enquiry, SubCategory, User,Country
 from django.utils.html import format_html, mark_safe
 from django.shortcuts import redirect
 from django.urls import path
@@ -472,7 +472,7 @@ class FileUploadMixin:
                 
 
                 
-                Materials.objects.create(
+                material = Materials.objects.create(
                     name=name,
                     description=description,
                     product_code=product_code,
@@ -483,7 +483,26 @@ class FileUploadMixin:
                     sub_category=sub_category,
                     brand=brand,
                 )
-                
+
+                blocked_country_raw = row.get('blocked_countries',None)
+                if pd.notna(blocked_country_raw) and str(blocked_country_raw).strip():
+                    country_names = [c.strip() for c in str(blocked_country_raw).replace(';',',').split(',') if c.strip()]
+
+                    matched_countries = []
+                    unmatched_name = []
+
+                    for cname in country_names:
+                        country = Country.objects.filter(name__iexact=cname).first()
+                        if country:
+                            matched_countries.append(country)
+                        else:
+                            unmatched_name.append(country)
+
+                    if matched_countries:
+                        material.blocked_countries.set(matched_countries)
+
+                    if unmatched_name:
+                        print(f"WARNING: Unrecognized country name(s) for '{product_code}': {', '.join(unmatched_names)}")
                 counts['materials'] += 1
 
             except Exception as e:
@@ -623,6 +642,7 @@ class BrandAdmin(admin.ModelAdmin):
 # ── Materials ─────────────────────────────────────────────────────────────────
 @admin.register(Materials)
 class MaterialsAdmin(FileUploadMixin, admin.ModelAdmin):
+    filter_horizontal = ('blocked_countries',)
     list_display = ['name', 'count', 'price', 'product_code', 'brand', 'category', 'sub_category','attachment_1','attachment_2','attachment_3','attachment_4']
     list_per_page = 20
     search_fields = ['name']
