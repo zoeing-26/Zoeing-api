@@ -100,6 +100,19 @@ class Brand(TimeStampMixin):
     
     def __str__(self):
         return self.name
+
+
+class Country(TimeStampMixin):
+    code = models.CharField(max_length=2, unique=True)
+    name = models.CharField(max_length=100,default=None,null=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "country"
+        db_table = "country"
+
     
 
 class Materials(TimeStampMixin):
@@ -117,6 +130,7 @@ class Materials(TimeStampMixin):
     attachment_2 = models.FileField(upload_to='materials/pdfs/', blank=True, null=True)
     attachment_3 = models.FileField(upload_to='materials/pdfs/', blank=True, null=True)
     attachment_4 = models.FileField(upload_to='materials/pdfs/', blank=True, null=True)
+    blocked_countries = models.ManyToManyField(Country, blank=True, related_name='blocked_materials')
         
     class Meta:
         verbose_name = "materials"
@@ -134,6 +148,7 @@ class Enquiry(TimeStampMixin):
     phone_number = models.CharField(max_length=15,blank=True,null=True)
     company_name = models.CharField(max_length=150,blank=True,null=True)
     customer_type = models.CharField(max_length=255,blank=True,null=True)
+
     class Meta:
         verbose_name = "enquiry"
         db_table = "enquiry"
